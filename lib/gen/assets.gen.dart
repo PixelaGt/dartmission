@@ -13,6 +13,7 @@ class $AssetsImagesGen {
   const $AssetsImagesGen();
 
   $AssetsImagesJpgGen get jpg => const $AssetsImagesJpgGen();
+  $AssetsImagesPngGen get png => const $AssetsImagesPngGen();
   $AssetsImagesSvgGen get svg => const $AssetsImagesSvgGen();
 }
 
@@ -22,6 +23,58 @@ class $AssetsImagesJpgGen {
   /// File path: assets/images/jpg/background_space.jpg
   AssetGenImage get backgroundSpace =>
       const AssetGenImage('assets/images/jpg/background_space.jpg');
+}
+
+class $AssetsImagesPngGen {
+  const $AssetsImagesPngGen();
+
+  /// File path: assets/images/png/down_left.png
+  AssetGenImage get downLeft =>
+      const AssetGenImage('assets/images/png/down_left.png');
+
+  /// File path: assets/images/png/down_right.png
+  AssetGenImage get downRight =>
+      const AssetGenImage('assets/images/png/down_right.png');
+
+  /// File path: assets/images/png/down_up.png
+  AssetGenImage get downUp =>
+      const AssetGenImage('assets/images/png/down_up.png');
+
+  /// File path: assets/images/png/left_down.png
+  AssetGenImage get leftDown =>
+      const AssetGenImage('assets/images/png/left_down.png');
+
+  /// File path: assets/images/png/left_right.png
+  AssetGenImage get leftRight =>
+      const AssetGenImage('assets/images/png/left_right.png');
+
+  /// File path: assets/images/png/left_up.png
+  AssetGenImage get leftUp =>
+      const AssetGenImage('assets/images/png/left_up.png');
+
+  /// File path: assets/images/png/right-left.png
+  AssetGenImage get rightLeft =>
+      const AssetGenImage('assets/images/png/right-left.png');
+
+  /// File path: assets/images/png/right_down.png
+  AssetGenImage get rightDown =>
+      const AssetGenImage('assets/images/png/right_down.png');
+
+  /// File path: assets/images/png/right_up.png
+  AssetGenImage get rightUp =>
+      const AssetGenImage('assets/images/png/right_up.png');
+
+  /// File path: assets/images/png/up_down.png
+  AssetGenImage get upDown =>
+      const AssetGenImage('assets/images/png/up_down.png');
+
+  /// File path: assets/images/png/up_left.png
+  AssetGenImage get upLeft =>
+      const AssetGenImage('assets/images/png/up_left.png');
+
+  /// File path: assets/images/png/up_right.png
+  AssetGenImage get upRight =>
+      const AssetGenImage('assets/images/png/up_right.png');
 }
 
 class $AssetsImagesSvgGen {

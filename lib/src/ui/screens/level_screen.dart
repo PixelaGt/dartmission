@@ -73,116 +73,9 @@ class _LevelScreenState extends State<LevelScreen> {
     _tiles.last.last.blocked = true;
     _tiles.last.last.isFinal = true;
     _tiles.first.first.blocked = true;
-    _tiles.first.first.exitDirection = DirectionEnum.bottom;
+    _tiles.first.first.exitDirection = DirectionEnum.down;
     _tiles.first.first.isFirst = true;
     _solutionStack.push(_exit);
-  }
-
-  // Method to select a random, playable tyle to be emtpy
-  void _setEmptyTile() {
-    late int _selectedRow;
-    late int _selectedColumn;
-    var _selectedValidTile = false;
-    while (!_selectedValidTile) {
-      _selectedRow = _randomizer.nextInt(columns) + 1;
-      _selectedColumn = _randomizer.nextInt(columns);
-      // We make sure the empty tyle is not directly above the ending tyle
-      // Make sure the emtpy tyle is not directly below the starting tyle
-      _selectedValidTile = !(_selectedRow == 1 && _selectedColumn == 0) &&
-          !(_selectedRow == columns && _selectedColumn == columns - 1);
-    }
-    _emptyTileRow = _selectedRow;
-    _emptyTileColumn = _selectedColumn;
-    _tiles[_selectedColumn][_selectedRow].empty = true;
-  }
-
-  void _connectSolutionPath() {
-    var _solutionTiles = <Tile>[];
-    // Add all solution tiles of the stack to a list
-    while (_solutionStack.isNotEmpty) {
-      final _solutionTile = _solutionStack.pop();
-      _solutionTiles.add(_solutionTile);
-    }
-    _solutionTiles = _solutionTiles.reversed.toList();
-    var _entryDirection = DirectionEnum.top;
-    // We will grab all the tiles from the solution and paint the directions
-    for (var i = 0; i < _solutionTiles.length - 1; i++) {
-      // Will always evaluate the current solution tile, and the next tile in
-      // The solution array in order to know in which direction to go
-      final _currentTile = _solutionTiles[i];
-      final _nextTile = _solutionTiles[i + 1];
-      // Set the entry direction of the tile
-      _solutionTiles[i].enterDirection = _entryDirection;
-      _tiles[_currentTile.column][_currentTile.row].enterDirection =
-          _entryDirection;
-
-      // Set the exit direction of the current tyle based on the next tyle's
-      // Position
-      late DirectionEnum _exitDirection;
-      // If the tiles are together vertically
-      if (_nextTile.row == _currentTile.row) {
-        // If the next tile in the solution is to the right of the current tile
-        if (_nextTile.column > _currentTile.column) {
-          _exitDirection = DirectionEnum.right;
-        } else {
-          // If the next tile in the solution is to the left of the current tile
-          _exitDirection = DirectionEnum.left;
-        }
-        // The tiles are together horizontally
-      } else {
-        // If the next tile in the solution is below the current tile
-        if (_nextTile.row > _currentTile.row) {
-          _exitDirection = DirectionEnum.bottom;
-        } else {
-          // If the next tile in the solution is above the current tile
-          _exitDirection = DirectionEnum.top;
-        }
-      }
-      // Set exit direction
-      _solutionTiles[i].exitDirection = _exitDirection;
-      _tiles[_currentTile.column][_currentTile.row].exitDirection =
-          _exitDirection;
-      // Set entry direction for the next tyle
-      if (_exitDirection == DirectionEnum.right) {
-        _entryDirection = DirectionEnum.left;
-      } else if (_exitDirection == DirectionEnum.left) {
-        _entryDirection = DirectionEnum.right;
-      } else if (_exitDirection == DirectionEnum.top) {
-        _entryDirection = DirectionEnum.bottom;
-      } else if (_exitDirection == DirectionEnum.bottom) {
-        _entryDirection = DirectionEnum.top;
-      }
-    }
-  }
-
-  // Method that will change a random tyle with the empty or white tyle
-  void _scrambleMaze() {
-    var _whitespace = _tiles[_emptyTileColumn][_emptyTileRow];
-    var _randomRow = 0;
-    var _randomColumn = 0;
-    for (var scrambleStep = 0; scrambleStep <= 15; scrambleStep++) {
-      var _isRandomTileValid = false;
-      do {
-        _randomRow = _randomizer.nextInt(columns) + 1;
-        _randomColumn = _randomizer.nextInt(columns);
-        _isRandomTileValid = (_randomRow != _whitespace.row) &&
-            (_randomColumn != _whitespace.column);
-      } while (!_isRandomTileValid);
-
-      final _blankTile = _whitespace;
-      final _selectedTile = _tiles[_randomColumn][_randomRow];
-      _emptyTileRow = _whitespace.row;
-      _emptyTileColumn = _whitespace.column;
-      _whitespace = _tiles[_selectedTile.column][_selectedTile.row];
-
-      _tiles[_selectedTile.column][_selectedTile.row] = _blankTile
-        ..column = _selectedTile.column
-        ..row = _selectedTile.row;
-
-      _tiles[_emptyTileColumn][_emptyTileRow] = _selectedTile
-        ..column = _emptyTileColumn
-        ..row = _emptyTileRow;
-    }
   }
 
   Tile? _getNext(Tile _current) {
@@ -226,63 +119,150 @@ class _LevelScreenState extends State<LevelScreen> {
     return null;
   }
 
-  GestureDetector buildCard(Tile _tile) {
-    // Colors
-    var _color = Colors.transparent;
-    if (_tile.blocked) {
-      _color = Colors.red;
+  // Method to select a random, playable tyle to be emtpy
+  void _setEmptyTile() {
+    late int _selectedRow;
+    late int _selectedColumn;
+    var _selectedValidTile = false;
+    while (!_selectedValidTile) {
+      _selectedRow = _randomizer.nextInt(columns) + 1;
+      _selectedColumn = _randomizer.nextInt(columns);
+      // We make sure the empty tyle is not directly above the ending tyle
+      // Make sure the emtpy tyle is not directly below the starting tyle
+      _selectedValidTile = !(_selectedRow == 1 && _selectedColumn == 0) &&
+          !(_selectedRow == columns && _selectedColumn == columns - 1);
     }
-    if (_tile.empty) {
-      _color = Colors.white;
-    }
-    Icon? _directionIcon;
+    _emptyTileRow = _selectedRow;
+    _emptyTileColumn = _selectedColumn;
+    _tiles[_selectedColumn][_selectedRow].empty = true;
+  }
 
-    if (!_tile.empty && !_tile.blocked) {
-      // Road Direction
-      if (_tile.enterDirection == DirectionEnum.top &&
-          _tile.exitDirection == DirectionEnum.bottom) {
-        _directionIcon = const Icon(Icons.south);
-      } else if (_tile.enterDirection == DirectionEnum.top &&
-          _tile.exitDirection == DirectionEnum.right) {
-        _directionIcon = const Icon(Icons.subdirectory_arrow_right);
-      } else if (_tile.enterDirection == DirectionEnum.top &&
-          _tile.exitDirection == DirectionEnum.left) {
-        _directionIcon = const Icon(Icons.keyboard_return);
-      } else if (_tile.enterDirection == DirectionEnum.left &&
-          _tile.exitDirection == DirectionEnum.top) {
-        _directionIcon = const Icon(Icons.call_made);
-      } else if (_tile.enterDirection == DirectionEnum.left &&
-          _tile.exitDirection == DirectionEnum.right) {
-        _directionIcon = const Icon(Icons.trending_flat);
-      } else if (_tile.enterDirection == DirectionEnum.left &&
-          _tile.exitDirection == DirectionEnum.bottom) {
-        _directionIcon = const Icon(Icons.south_east);
-      } else if (_tile.enterDirection == DirectionEnum.right &&
-          _tile.exitDirection == DirectionEnum.top) {
-        _directionIcon = const Icon(Icons.north_west);
-      } else if (_tile.enterDirection == DirectionEnum.right &&
-          _tile.exitDirection == DirectionEnum.left) {
-        _directionIcon = const Icon(Icons.west);
-      } else if (_tile.enterDirection == DirectionEnum.right &&
-          _tile.exitDirection == DirectionEnum.bottom) {
-        _directionIcon = const Icon(Icons.south_west);
-      } else if (_tile.enterDirection == DirectionEnum.bottom &&
-          _tile.exitDirection == DirectionEnum.top) {
-        _directionIcon = const Icon(Icons.north);
-      } else if (_tile.enterDirection == DirectionEnum.bottom &&
-          _tile.exitDirection == DirectionEnum.right) {
-        _directionIcon = const Icon(Icons.shortcut);
-      } else if (_tile.enterDirection == DirectionEnum.bottom &&
-          _tile.exitDirection == DirectionEnum.left) {
-        _directionIcon = const Icon(Icons.reply);
+  void _connectSolutionPath() {
+    var _solutionTiles = <Tile>[];
+    // Add all solution tiles of the stack to a list
+    while (_solutionStack.isNotEmpty) {
+      final _solutionTile = _solutionStack.pop();
+      _solutionTiles.add(_solutionTile);
+    }
+    _solutionTiles = _solutionTiles.reversed.toList();
+    var _entryDirection = DirectionEnum.up;
+    // We will grab all the tiles from the solution and paint the directions
+    for (var i = 0; i < _solutionTiles.length - 1; i++) {
+      // Will always evaluate the current solution tile, and the next tile in
+      // The solution array in order to know in which direction to go
+      final _currentTile = _solutionTiles[i]..isPartOfSolution = true;
+      final _nextTile = _solutionTiles[i + 1];
+      // Set the entry direction of the tile
+      _solutionTiles[i].enterDirection = _entryDirection;
+      _tiles[_currentTile.column][_currentTile.row].enterDirection =
+          _entryDirection;
+
+      // Set the exit direction of the current tyle based on the next tyle's
+      // Position
+      late DirectionEnum _exitDirection;
+      // If the tiles are together vertically
+      if (_nextTile.row == _currentTile.row) {
+        // If the next tile in the solution is to the right of the current tile
+        if (_nextTile.column > _currentTile.column) {
+          _exitDirection = DirectionEnum.right;
+        } else {
+          // If the next tile in the solution is to the left of the current tile
+          _exitDirection = DirectionEnum.left;
+        }
+        // The tiles are together horizontally
+      } else {
+        // If the next tile in the solution is below the current tile
+        if (_nextTile.row > _currentTile.row) {
+          _exitDirection = DirectionEnum.down;
+        } else {
+          // If the next tile in the solution is above the current tile
+          _exitDirection = DirectionEnum.up;
+        }
       }
+      // Set exit direction
+      _solutionTiles[i].exitDirection = _exitDirection;
+      _tiles[_currentTile.column][_currentTile.row].exitDirection =
+          _exitDirection;
+      // Set entry direction for the next tyle
+      if (_exitDirection == DirectionEnum.right) {
+        _entryDirection = DirectionEnum.left;
+      } else if (_exitDirection == DirectionEnum.left) {
+        _entryDirection = DirectionEnum.right;
+      } else if (_exitDirection == DirectionEnum.up) {
+        _entryDirection = DirectionEnum.down;
+      } else if (_exitDirection == DirectionEnum.down) {
+        _entryDirection = DirectionEnum.up;
+      }
+    }
+  }
+
+  // Method that will change a random tyle with the empty or white tyle
+  void _scrambleMaze() {
+    var _whitespace = _tiles[_emptyTileColumn][_emptyTileRow];
+    var _randomRow = 0;
+    var _randomColumn = 0;
+    for (var scrambleStep = 0; scrambleStep <= 15; scrambleStep++) {
+      var _isRandomTileValid = false;
+      do {
+        _randomRow = _randomizer.nextInt(columns) + 1;
+        _randomColumn = _randomizer.nextInt(columns);
+        _isRandomTileValid = (_randomRow != _whitespace.row) &&
+            (_randomColumn != _whitespace.column);
+      } while (!_isRandomTileValid);
+
+      final _blankTile = _whitespace;
+      final _selectedTile = _tiles[_randomColumn][_randomRow];
+      _emptyTileRow = _whitespace.row;
+      _emptyTileColumn = _whitespace.column;
+      _whitespace = _tiles[_selectedTile.column][_selectedTile.row];
+
+      _tiles[_selectedTile.column][_selectedTile.row] = _blankTile
+        ..column = _selectedTile.column
+        ..row = _selectedTile.row;
+
+      _tiles[_emptyTileColumn][_emptyTileRow] = _selectedTile
+        ..column = _emptyTileColumn
+        ..row = _emptyTileRow;
+    }
+  }
+
+  Widget buildCard(Tile _tile) {
+    Image? _backgroundImage;
+    if (_tile.empty) {
+      return Container();
+    }
+    if (_tile.blocked) {
+      if (_tile.isFirst) {}
+      if (_tile.isFinal) {}
+      return Container();
+    }
+    if (!_tile.isPartOfSolution) {
+      _backgroundImage = Image.asset(
+        'assets/images/jpg/background_space.jpg',
+        fit: BoxFit.fill,
+      );
+    } else {
+      // Road Direction
+      _backgroundImage = Image.asset(
+        'assets/images/png/'
+        '${_tile.enterDirection.name}_${_tile.exitDirection.name}.png',
+        fit: BoxFit.fill,
+      );
     }
 
     return GestureDetector(
       onTap: () {
         _onTileTapped(_tile);
       },
-      child: Card(color: _color, child: _directionIcon),
+      child: Card(
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        elevation: 3,
+        child: _backgroundImage,
+      ),
     );
   }
 
@@ -366,7 +346,10 @@ class _LevelScreenState extends State<LevelScreen> {
       return true;
     }
     // Check tile is availble
-    if (!_currentTile.isFirst && (_currentTile.empty || _currentTile.blocked)) {
+    if (!_currentTile.isFirst &&
+        (_currentTile.empty ||
+            _currentTile.blocked ||
+            !_currentTile.isPartOfSolution)) {
       return false;
     }
 
@@ -390,19 +373,19 @@ class _LevelScreenState extends State<LevelScreen> {
       }
     }
     // Top
-    if (_currentTile.exitDirection == DirectionEnum.top) {
+    if (_currentTile.exitDirection == DirectionEnum.up) {
       if (_currentTile.row > 0) {
         final _topTile = _tiles[_currentTile.column][_currentTile.row - 1];
-        if (_topTile.enterDirection == DirectionEnum.bottom) {
+        if (_topTile.enterDirection == DirectionEnum.down) {
           return _checkIfMazeCompleted(_topTile);
         }
       }
     }
     // Bottom
-    if (_currentTile.exitDirection == DirectionEnum.bottom) {
+    if (_currentTile.exitDirection == DirectionEnum.down) {
       if (_currentTile.row < rows - 1) {
         final _bottomTile = _tiles[_currentTile.column][_currentTile.row + 1];
-        if (_bottomTile.enterDirection == DirectionEnum.top) {
+        if (_bottomTile.enterDirection == DirectionEnum.up) {
           return _checkIfMazeCompleted(_bottomTile);
         }
       }
