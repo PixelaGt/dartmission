@@ -73,7 +73,7 @@ class _LevelScreenState extends State<LevelScreen> {
     _tiles.last.last.blocked = true;
     _tiles.last.last.isFinal = true;
     _tiles.first.first.blocked = true;
-    _tiles.first.first.exitDirection = DirectionEnum.bottom;
+    _tiles.first.first.exitDirection = DirectionEnum.down;
     _tiles.first.first.isFirst = true;
     _solutionStack.push(_exit);
   }
@@ -104,7 +104,7 @@ class _LevelScreenState extends State<LevelScreen> {
       _solutionTiles.add(_solutionTile);
     }
     _solutionTiles = _solutionTiles.reversed.toList();
-    var _entryDirection = DirectionEnum.top;
+    var _entryDirection = DirectionEnum.up;
     // We will grab all the tiles from the solution and paint the directions
     for (var i = 0; i < _solutionTiles.length - 1; i++) {
       // Will always evaluate the current solution tile, and the next tile in
@@ -132,10 +132,10 @@ class _LevelScreenState extends State<LevelScreen> {
       } else {
         // If the next tile in the solution is below the current tile
         if (_nextTile.row > _currentTile.row) {
-          _exitDirection = DirectionEnum.bottom;
+          _exitDirection = DirectionEnum.down;
         } else {
           // If the next tile in the solution is above the current tile
-          _exitDirection = DirectionEnum.top;
+          _exitDirection = DirectionEnum.up;
         }
       }
       // Set exit direction
@@ -147,10 +147,10 @@ class _LevelScreenState extends State<LevelScreen> {
         _entryDirection = DirectionEnum.left;
       } else if (_exitDirection == DirectionEnum.left) {
         _entryDirection = DirectionEnum.right;
-      } else if (_exitDirection == DirectionEnum.top) {
-        _entryDirection = DirectionEnum.bottom;
-      } else if (_exitDirection == DirectionEnum.bottom) {
-        _entryDirection = DirectionEnum.top;
+      } else if (_exitDirection == DirectionEnum.up) {
+        _entryDirection = DirectionEnum.down;
+      } else if (_exitDirection == DirectionEnum.down) {
+        _entryDirection = DirectionEnum.up;
       }
     }
   }
@@ -226,63 +226,37 @@ class _LevelScreenState extends State<LevelScreen> {
     return null;
   }
 
-  GestureDetector buildCard(Tile _tile) {
-    // Colors
-    var _color = Colors.transparent;
-    if (_tile.blocked) {
-      _color = Colors.red;
-    }
+  Widget buildCard(Tile _tile) {
+    Image? _backgroundImage;
     if (_tile.empty) {
-      _color = Colors.white;
+      return Container();
     }
-    Icon? _directionIcon;
+    if (_tile.blocked) {
+      if (_tile.isFirst) {}
+      if (_tile.isFinal) {}
+      return Container();
+    }
 
-    if (!_tile.empty && !_tile.blocked) {
-      // Road Direction
-      if (_tile.enterDirection == DirectionEnum.top &&
-          _tile.exitDirection == DirectionEnum.bottom) {
-        _directionIcon = const Icon(Icons.south);
-      } else if (_tile.enterDirection == DirectionEnum.top &&
-          _tile.exitDirection == DirectionEnum.right) {
-        _directionIcon = const Icon(Icons.subdirectory_arrow_right);
-      } else if (_tile.enterDirection == DirectionEnum.top &&
-          _tile.exitDirection == DirectionEnum.left) {
-        _directionIcon = const Icon(Icons.keyboard_return);
-      } else if (_tile.enterDirection == DirectionEnum.left &&
-          _tile.exitDirection == DirectionEnum.top) {
-        _directionIcon = const Icon(Icons.call_made);
-      } else if (_tile.enterDirection == DirectionEnum.left &&
-          _tile.exitDirection == DirectionEnum.right) {
-        _directionIcon = const Icon(Icons.trending_flat);
-      } else if (_tile.enterDirection == DirectionEnum.left &&
-          _tile.exitDirection == DirectionEnum.bottom) {
-        _directionIcon = const Icon(Icons.south_east);
-      } else if (_tile.enterDirection == DirectionEnum.right &&
-          _tile.exitDirection == DirectionEnum.top) {
-        _directionIcon = const Icon(Icons.north_west);
-      } else if (_tile.enterDirection == DirectionEnum.right &&
-          _tile.exitDirection == DirectionEnum.left) {
-        _directionIcon = const Icon(Icons.west);
-      } else if (_tile.enterDirection == DirectionEnum.right &&
-          _tile.exitDirection == DirectionEnum.bottom) {
-        _directionIcon = const Icon(Icons.south_west);
-      } else if (_tile.enterDirection == DirectionEnum.bottom &&
-          _tile.exitDirection == DirectionEnum.top) {
-        _directionIcon = const Icon(Icons.north);
-      } else if (_tile.enterDirection == DirectionEnum.bottom &&
-          _tile.exitDirection == DirectionEnum.right) {
-        _directionIcon = const Icon(Icons.shortcut);
-      } else if (_tile.enterDirection == DirectionEnum.bottom &&
-          _tile.exitDirection == DirectionEnum.left) {
-        _directionIcon = const Icon(Icons.reply);
-      }
-    }
+    // Road Direction
+    _backgroundImage = Image.asset(
+      'assets/images/png/'
+      '${_tile.enterDirection.name}_${_tile.exitDirection.name}.png',
+      fit: BoxFit.fill,
+    );
 
     return GestureDetector(
       onTap: () {
         _onTileTapped(_tile);
       },
-      child: Card(color: _color, child: _directionIcon),
+      child: Card(
+        color: Colors.transparent,
+        clipBehavior: Clip.antiAliasWithSaveLayer,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        elevation: 3,
+        child: _backgroundImage,
+      ),
     );
   }
 
@@ -390,19 +364,19 @@ class _LevelScreenState extends State<LevelScreen> {
       }
     }
     // Top
-    if (_currentTile.exitDirection == DirectionEnum.top) {
+    if (_currentTile.exitDirection == DirectionEnum.up) {
       if (_currentTile.row > 0) {
         final _topTile = _tiles[_currentTile.column][_currentTile.row - 1];
-        if (_topTile.enterDirection == DirectionEnum.bottom) {
+        if (_topTile.enterDirection == DirectionEnum.down) {
           return _checkIfMazeCompleted(_topTile);
         }
       }
     }
     // Bottom
-    if (_currentTile.exitDirection == DirectionEnum.bottom) {
+    if (_currentTile.exitDirection == DirectionEnum.down) {
       if (_currentTile.row < rows - 1) {
         final _bottomTile = _tiles[_currentTile.column][_currentTile.row + 1];
-        if (_bottomTile.enterDirection == DirectionEnum.top) {
+        if (_bottomTile.enterDirection == DirectionEnum.up) {
           return _checkIfMazeCompleted(_bottomTile);
         }
       }
