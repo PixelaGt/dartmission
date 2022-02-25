@@ -349,8 +349,9 @@ class _LevelScreenState extends State<LevelScreen> {
     final _mazeCompleted = _checkIfMazeCompleted(_tiles.first.first);
     if (_mazeCompleted) {
       _timer.cancel();
+      levelsCompleted++;
       // Advance level difficulty
-      if (levelsCompleted / 3 == 0 &&
+      if (levelsCompleted % 3 == 0 &&
           _levelDifficulty != DifficultyEnum.hardcore) {
         if (_levelDifficulty == DifficultyEnum.easy) {
           _levelDifficulty = DifficultyEnum.medium;
