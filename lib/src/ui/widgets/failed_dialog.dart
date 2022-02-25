@@ -14,19 +14,11 @@ class _FailedDialogState extends State<FailedDialog> {
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final screenWidth = media.size.width;
+    final screenHeight = media.size.height;
+    final isMobile = screenWidth <= 960 || false;
 
     return AlertDialog(
       backgroundColor: Colors.black.withOpacity(0.2),
-      // scrollable: false,
-      // actionsPadding: const EdgeInsets.only(bottom: 40),
-      contentPadding: const EdgeInsets.fromLTRB(48, 12, 48, 48),
-      // // insetPadding: isMobile
-      // //     ? EdgeInsets.only(top: height * 0.12)
-      // //     : const EdgeInsets.symmetric(horizontal: 24),
-      // titlePadding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      // shape: const RoundedRectangleBorder(
-      //   borderRadius: BorderRadius.all(Radius.circular(10)),
-      // ),
       content: SizedBox(
         width: double.maxFinite,
         height: double.maxFinite,
@@ -34,10 +26,17 @@ class _FailedDialogState extends State<FailedDialog> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Failed',
-              style: Theme.of(context).textTheme.headline2!.apply(
-                    color: Colors.orange,
-                  ),
+              'Failed!',
+              style: isMobile
+                  ? Theme.of(context).textTheme.headline3!.apply(
+                        color: Colors.orange,
+                      )
+                  : Theme.of(context).textTheme.headline2!.apply(
+                        color: Colors.orange,
+                      ),
+            ),
+            SizedBox(
+              height: isMobile ? screenHeight / 30 : screenHeight / 20,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -52,18 +51,20 @@ class _FailedDialogState extends State<FailedDialog> {
                     );
                   },
                   child: Assets.images.svg.exitBtn.svg(
-                    width: 75,
-                    height: 75,
+                    height: isMobile ? 30 : 75,
+                    width: isMobile ? 24 : 75,
                   ),
                 ),
                 SizedBox(
-                  width: screenWidth / 10,
+                  width: isMobile ? screenWidth / 30 : screenWidth / 30,
                 ),
-                Container(
-                  color: Colors.black,
-                  width: 150,
-                  height: 150,
-                )
+                GestureDetector(
+                  onTap: () {},
+                  child: Assets.images.svg.restartBtn.svg(
+                    height: isMobile ? 30 : 75,
+                    width: isMobile ? 24 : 75,
+                  ),
+                ),
               ],
             ),
           ],

@@ -14,7 +14,7 @@ TextTheme dartMissionTextTheme = TextTheme(
   ),
   headline3: GoogleFonts.sourceCodePro(
     fontSize: 50,
-    fontWeight: FontWeight.normal,
+    fontWeight: FontWeight.bold,
     letterSpacing: 0,
   ),
   headline4: GoogleFonts.sourceCodePro(
