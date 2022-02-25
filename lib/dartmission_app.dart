@@ -15,7 +15,7 @@ class DartmissionApp extends StatefulWidget {
 }
 
 class _DartmissionAppState extends State<DartmissionApp> {
-  final int tilesCount = 5; // Playable tiles (3 x 3)
+  final int tilesCount = 3; // Playable tiles (3 x 3)
   late int columns; // Total amount of columns in the tile matrix
   late int rows; // Total amount of rows in the tile matrix
   late List<List<Tile>> _tiles; // Matrix of tiles
@@ -71,7 +71,10 @@ class _DartmissionAppState extends State<DartmissionApp> {
     }
     // Block the starting and ending tyles
     _tiles.last.last.blocked = true;
+    _tiles.last.last.isFinal = true;
     _tiles.first.first.blocked = true;
+    _tiles.first.first.exitDirection = DirectionEnum.bottom;
+    _tiles.first.first.isFirst = true;
     _solutionStack.push(_exit);
   }
 
@@ -99,8 +102,6 @@ class _DartmissionAppState extends State<DartmissionApp> {
     while (_solutionStack.isNotEmpty) {
       final _solutionTile = _solutionStack.pop();
       _solutionTiles.add(_solutionTile);
-      _tiles[_solutionTile.column][_solutionTile.row].partOfSolution =
-          true; //tmp. Will remove on final version
     }
     _solutionTiles = _solutionTiles.reversed.toList();
     var _entryDirection = DirectionEnum.top;
@@ -159,7 +160,7 @@ class _DartmissionAppState extends State<DartmissionApp> {
     var _whitespace = _tiles[_emptyTileColumn][_emptyTileRow];
     var _randomRow = 0;
     var _randomColumn = 0;
-    for (var scrambleStep = 0; scrambleStep <= 30; scrambleStep++) {
+    for (var scrambleStep = 0; scrambleStep <= 15; scrambleStep++) {
       var _isRandomTileValid = false;
       do {
         _randomRow = _randomizer.nextInt(columns) + 1;
@@ -227,18 +228,16 @@ class _DartmissionAppState extends State<DartmissionApp> {
 
   GestureDetector buildCard(Tile _tile) {
     // Colors
-    var _color = Colors.black;
+    var _color = Colors.transparent;
     if (_tile.blocked) {
       _color = Colors.red;
     }
     if (_tile.empty) {
       _color = Colors.white;
     }
-    if (_tile.partOfSolution) {
-      _color = Colors.yellow;
-    }
     Icon? _directionIcon;
-    if (!_tile.blocked && !_tile.empty) {
+
+    if (!_tile.empty && !_tile.blocked) {
       // Road Direction
       if (_tile.enterDirection == DirectionEnum.top &&
           _tile.exitDirection == DirectionEnum.bottom) {
@@ -281,13 +280,23 @@ class _DartmissionAppState extends State<DartmissionApp> {
 
     return GestureDetector(
       onTap: () {
-        _moveTile(_tile);
+        _onTileTapped(_tile);
       },
-      child: Card(
-        color: _color,
-        child: _directionIcon,
-      ),
+      child: Card(color: _color, child: _directionIcon),
     );
+  }
+
+  void _onTileTapped(Tile _tileTapped) {
+    _moveTile(_tileTapped);
+    for (var c = 0; c < columns; c++) {
+      for (var r = 0; r < rows; r++) {
+        _tiles[c][r].visited = false;
+      }
+    }
+    final _mazeCompleted = _checkIfMazeCompleted(_tiles.first.first);
+    if (_mazeCompleted) {
+      print('SE GANÓ :D');
+    }
   }
 
   void _moveTile(Tile _tappedTile) {
@@ -306,7 +315,7 @@ class _DartmissionAppState extends State<DartmissionApp> {
         _neighbourEmptyTile = _leftTile;
       }
     }
-    //right
+    //Right
     if (_tappedTile.column < columns - 1 && !_moved) {
       final _rightTile = _tiles[_tappedTile.column + 1][_tappedTile.row];
       if (_rightTile.empty) {
@@ -346,6 +355,59 @@ class _DartmissionAppState extends State<DartmissionApp> {
           ..row = _blankTileRow;
       });
     }
+  }
+
+  bool _checkIfMazeCompleted(Tile _currentTile) {
+    // Mark current tile as visited
+    _currentTile.visited = true;
+
+    // If the current tile is the ending tile we return true
+    if (_currentTile.isFinal) {
+      return true;
+    }
+    // Check tile is availble
+    if (!_currentTile.isFirst && (_currentTile.empty || _currentTile.blocked)) {
+      return false;
+    }
+
+    // Else we check if there are other connected tiles we can go to
+    // Left
+    if (_currentTile.exitDirection == DirectionEnum.left) {
+      if (_currentTile.column > 0) {
+        final _leftTile = _tiles[_currentTile.column - 1][_currentTile.row];
+        if (_leftTile.enterDirection == DirectionEnum.right) {
+          return _checkIfMazeCompleted(_leftTile);
+        }
+      }
+    }
+    // Right
+    if (_currentTile.exitDirection == DirectionEnum.right) {
+      if (_currentTile.column < columns - 1) {
+        final _rightTile = _tiles[_currentTile.column + 1][_currentTile.row];
+        if (_rightTile.enterDirection == DirectionEnum.left) {
+          return _checkIfMazeCompleted(_rightTile);
+        }
+      }
+    }
+    // Top
+    if (_currentTile.exitDirection == DirectionEnum.top) {
+      if (_currentTile.row > 0) {
+        final _topTile = _tiles[_currentTile.column][_currentTile.row - 1];
+        if (_topTile.enterDirection == DirectionEnum.bottom) {
+          return _checkIfMazeCompleted(_topTile);
+        }
+      }
+    }
+    // Bottom
+    if (_currentTile.exitDirection == DirectionEnum.bottom) {
+      if (_currentTile.row < rows - 1) {
+        final _bottomTile = _tiles[_currentTile.column][_currentTile.row + 1];
+        if (_bottomTile.enterDirection == DirectionEnum.top) {
+          return _checkIfMazeCompleted(_bottomTile);
+        }
+      }
+    }
+    return false;
   }
 
   @override

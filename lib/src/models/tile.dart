@@ -10,8 +10,9 @@ class Tile {
   int row;
   bool blocked;
 
+  bool isFinal = false;
+  bool isFirst = false;
   bool visited = false;
-  bool partOfSolution = false;
   bool empty = false;
 
   DirectionEnum enterDirection = DirectionEnum.top;
