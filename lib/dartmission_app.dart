@@ -1,4 +1,4 @@
-import 'package:dartmission/src/ui/screens/level_screen.dart';
+import 'package:dartmission/src/ui/screens/initial_screen.dart';
 import 'package:dartmission/src/ui/themes/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class _DartmissionAppState extends State<DartmissionApp> {
       //  debugShowCheckedModeBanner: false,
       home: const Scaffold(
         backgroundColor: Color(0xFF331076),
-        body: SafeArea(child: LevelScreen()),
+        body: SafeArea(child: InitialScreenView()),
       ),
     );
   }
