@@ -1,3 +1,5 @@
+import 'package:dartmission/src/ui/screens/initial_screen.dart';
+import 'package:dartmission/src/ui/themes/theme.dart';
 import 'package:flutter/material.dart';
 
 class DartmissionApp extends StatelessWidget {
@@ -5,6 +7,12 @@ class DartmissionApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return MaterialApp(
+      theme: dartMissionTheme,
+      //  debugShowCheckedModeBanner: false,
+      home: const Scaffold(
+        body: SafeArea(child: InitialScreenView()),
+      ),
+    );
   }
 }
