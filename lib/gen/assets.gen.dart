@@ -55,13 +55,13 @@ class $AssetsImagesPngGen {
   AssetGenImage get leftUp =>
       const AssetGenImage('assets/images/png/left_up.png');
 
-  /// File path: assets/images/png/right-left.png
-  AssetGenImage get rightLeft =>
-      const AssetGenImage('assets/images/png/right-left.png');
-
   /// File path: assets/images/png/right_down.png
   AssetGenImage get rightDown =>
       const AssetGenImage('assets/images/png/right_down.png');
+
+  /// File path: assets/images/png/right_left.png
+  AssetGenImage get rightLeft =>
+      const AssetGenImage('assets/images/png/right_left.png');
 
   /// File path: assets/images/png/right_up.png
   AssetGenImage get rightUp =>
