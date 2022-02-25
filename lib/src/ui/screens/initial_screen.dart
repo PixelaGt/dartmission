@@ -79,7 +79,7 @@ class InitialScreenViewState extends State<InitialScreenView> {
               'A flutter adventure',
               style: isMobile ? 
                 Theme.of(context).textTheme.headline5!.apply(
-                  color: Colors.white
+                  color: Colors.white,
                 ) :
                 Theme.of(context).textTheme.headline4!.apply(
                   color: Colors.white,

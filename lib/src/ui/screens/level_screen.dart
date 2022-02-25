@@ -417,7 +417,8 @@ class _LevelScreenState extends State<LevelScreen> {
             Align(
               alignment: Alignment(
                 isMobile ? Alignment.center.x : Alignment.bottomLeft.x - 0.45,
-                Alignment.bottomLeft.y + (isMobile ? 0.45 : isTablet ? 0.3 : 0.90),
+                Alignment.bottomLeft.y + 
+                  (isMobile ? 0.45 : isTablet ? 0.3 : 0.90),
               ),
               child: Assets.images.svg.pinkAndBluePlanet.svg(
                 width: isMobile ? screenWidth * 0.5 :
@@ -429,7 +430,7 @@ class _LevelScreenState extends State<LevelScreen> {
             ),
             Align(
               child: Assets.images.svg.pinkPlanet.svg(
-                width: isMobile ? screenWidth : screenWidth * 0.5
+                width: isMobile ? screenWidth : screenWidth * 0.5,
               ),
             ),
             Align(
