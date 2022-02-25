@@ -238,7 +238,7 @@ class _LevelScreenState extends State<LevelScreen> {
     }
     if (!_tile.isPartOfSolution) {
       _backgroundImage = Image.asset(
-        'assets/images/jpg/background_space.jpg',
+        'assets/images/png/empty.png',
         fit: BoxFit.fill,
       );
     } else {

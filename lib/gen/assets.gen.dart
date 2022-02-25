@@ -40,6 +40,9 @@ class $AssetsImagesPngGen {
   AssetGenImage get downUp =>
       const AssetGenImage('assets/images/png/down_up.png');
 
+  /// File path: assets/images/png/empty.png
+  AssetGenImage get empty => const AssetGenImage('assets/images/png/empty.png');
+
   /// File path: assets/images/png/left_down.png
   AssetGenImage get leftDown =>
       const AssetGenImage('assets/images/png/left_down.png');
