@@ -1,6 +1,8 @@
 import 'package:dartmission/gen/assets.gen.dart';
 import 'package:dartmission/src/ui/screens/level_screen.dart';
+import 'package:dartmission/src/ui/widgets/failed_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 
 class InitialScreenView extends StatefulWidget {
   const InitialScreenView({Key? key}) : super(key: key);
@@ -10,6 +12,15 @@ class InitialScreenView extends StatefulWidget {
 }
 
 class InitialScreenViewState extends State<InitialScreenView> {
+  // Controller for playback
+  late RiveAnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = SimpleAnimation('floating');
+  }
+
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);

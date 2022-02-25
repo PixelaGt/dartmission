@@ -9,7 +9,7 @@ TextTheme dartMissionTextTheme = TextTheme(
   ),
   headline2: GoogleFonts.sourceCodePro(
     fontSize: 63,
-    fontWeight: FontWeight.normal,
+    fontWeight: FontWeight.bold,
     letterSpacing: -0.05,
   ),
   headline3: GoogleFonts.sourceCodePro(
@@ -24,7 +24,7 @@ TextTheme dartMissionTextTheme = TextTheme(
   ),
   headline5: GoogleFonts.sourceCodePro(
     fontSize: 25,
-    fontWeight: FontWeight.bold,
+    fontWeight: FontWeight.normal,
     letterSpacing: 0,
   ),
   headline6: GoogleFonts.sourceCodePro(

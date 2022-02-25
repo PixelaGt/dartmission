@@ -17,6 +17,7 @@ dependencies:
   flutter_svg: ^1.0.3
   google_fonts: ^2.3.1
   intl: ^0.17.0
+  rive: ^0.8.1
 
 dev_dependencies:
   bloc_test: ^9.0.2
@@ -29,6 +30,7 @@ dev_dependencies:
 flutter_gen:
   integrations:
     flutter_svg: true
+    rive: true
   output: lib/gen/
 
 flutter:
@@ -36,5 +38,6 @@ flutter:
     - assets/images/svg/
     - assets/images/jpg/
     - assets/images/png/
+    - assets/rive/
   generate: true
   uses-material-design: true

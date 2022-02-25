@@ -8,6 +8,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/services.dart';
+import 'package:rive/rive.dart';
 
 class $AssetsImagesGen {
   const $AssetsImagesGen();
@@ -15,6 +16,13 @@ class $AssetsImagesGen {
   $AssetsImagesJpgGen get jpg => const $AssetsImagesJpgGen();
   $AssetsImagesPngGen get png => const $AssetsImagesPngGen();
   $AssetsImagesSvgGen get svg => const $AssetsImagesSvgGen();
+}
+
+class $AssetsRiveGen {
+  const $AssetsRiveGen();
+
+  /// File path: assets/rive/pixman.riv
+  RiveGenImage get pixman => const RiveGenImage('assets/rive/pixman.riv');
 }
 
 class $AssetsImagesJpgGen {
@@ -91,6 +99,14 @@ class $AssetsImagesSvgGen {
   SvgGenImage get backgroundSpace2 =>
       const SvgGenImage('assets/images/svg/background_space2.svg');
 
+  /// File path: assets/images/svg/exit_btn.svg
+  SvgGenImage get exitBtn =>
+      const SvgGenImage('assets/images/svg/exit_btn.svg');
+
+  /// File path: assets/images/svg/new_mission_btn.svg
+  SvgGenImage get newMissionBtn =>
+      const SvgGenImage('assets/images/svg/new_mission_btn.svg');
+
   /// File path: assets/images/svg/orange_planet.svg
   SvgGenImage get orangePlanet =>
       const SvgGenImage('assets/images/svg/orange_planet.svg');
@@ -111,6 +127,10 @@ class $AssetsImagesSvgGen {
   SvgGenImage get pinkPlanet =>
       const SvgGenImage('assets/images/svg/pink_planet.svg');
 
+  /// File path: assets/images/svg/restart_btn.svg
+  SvgGenImage get restartBtn =>
+      const SvgGenImage('assets/images/svg/restart_btn.svg');
+
   /// File path: assets/images/svg/start_btn.svg
   SvgGenImage get startBtn =>
       const SvgGenImage('assets/images/svg/start_btn.svg');
@@ -123,6 +143,7 @@ class Assets {
   Assets._();
 
   static const $AssetsImagesGen images = $AssetsImagesGen();
+  static const $AssetsRiveGen rive = $AssetsRiveGen();
 }
 
 class AssetGenImage extends AssetImage {
@@ -213,6 +234,39 @@ class SvgGenImage {
       semanticsLabel: semanticsLabel,
       excludeFromSemantics: excludeFromSemantics,
       clipBehavior: clipBehavior,
+    );
+  }
+
+  String get path => _assetName;
+}
+
+class RiveGenImage {
+  const RiveGenImage(this._assetName);
+
+  final String _assetName;
+
+  RiveAnimation rive({
+    String? artboard,
+    List<String> animations = const [],
+    List<String> stateMachines = const [],
+    BoxFit? fit,
+    Alignment? alignment,
+    Widget? placeHolder,
+    bool antialiasing = true,
+    List<RiveAnimationController> controllers = const [],
+    OnInitCallback? onInit,
+  }) {
+    return RiveAnimation.asset(
+      _assetName,
+      artboard: artboard,
+      animations: animations,
+      stateMachines: stateMachines,
+      fit: fit,
+      alignment: alignment,
+      placeHolder: placeHolder,
+      antialiasing: antialiasing,
+      controllers: controllers,
+      onInit: onInit,
     );
   }
 
