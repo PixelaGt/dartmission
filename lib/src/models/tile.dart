@@ -15,6 +15,6 @@ class Tile {
   bool visited = false;
   bool empty = false;
 
-  DirectionEnum enterDirection = DirectionEnum.top;
-  DirectionEnum exitDirection = DirectionEnum.bottom;
+  DirectionEnum enterDirection = DirectionEnum.up;
+  DirectionEnum exitDirection = DirectionEnum.down;
 }

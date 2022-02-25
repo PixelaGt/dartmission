@@ -1,6 +1,6 @@
 enum DirectionEnum {
-  top,
-  bottom,
+  up,
+  down,
   left,
   right,
 }
