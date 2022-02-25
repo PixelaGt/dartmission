@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:dartmission/gen/assets.gen.dart';
 import 'package:dartmission/src/models/custom_stack.dart';
+import 'package:dartmission/src/models/difficulty_enum.dart';
 import 'package:dartmission/src/models/directions_enum.dart';
 import 'package:dartmission/src/models/tile.dart';
 import 'package:dartmission/src/ui/widgets/screen_wrapper.dart';
@@ -15,7 +17,12 @@ class LevelScreen extends StatefulWidget {
 }
 
 class _LevelScreenState extends State<LevelScreen> {
-  final int tilesCount = 3; // Playable tiles (3 x 3)
+  late Timer _timer;
+  late int _timeLimit;
+  int levelsCompleted = 0;
+
+  DifficultyEnum _levelDifficulty = DifficultyEnum.easy;
+  late int _tilesCount; // Playable tiles (starts at 3 x 3)
   late int columns; // Total amount of columns in the tile matrix
   late int rows; // Total amount of rows in the tile matrix
   late List<List<Tile>> _tiles; // Matrix of tiles
@@ -25,10 +32,47 @@ class _LevelScreenState extends State<LevelScreen> {
   final Random _randomizer = Random(); // Randomizer
 
   @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
   void initState() {
-    columns = tilesCount;
-    rows = tilesCount + 2; // We need to add the starting and ending rows
     super.initState();
+    _startLevel();
+  }
+
+  void _startLevel() {
+    switch (_levelDifficulty) {
+      case DifficultyEnum.easy:
+        {
+          _tilesCount = 3;
+          _timeLimit = 300;
+          break;
+        }
+      case DifficultyEnum.medium:
+        {
+          _tilesCount = 4;
+          _timeLimit = 240;
+          break;
+        }
+      case DifficultyEnum.hard:
+        {
+          _tilesCount = 5;
+          _timeLimit = 180;
+          break;
+        }
+      case DifficultyEnum.hardcore:
+        {
+          _tilesCount = 6;
+          _timeLimit = 120;
+          break;
+        }
+    }
+
+    columns = _tilesCount;
+    rows = _tilesCount + 2; // We need to add the starting and ending rows
     // Set columns and rows
     _tiles = List.generate(
       columns,
@@ -45,6 +89,27 @@ class _LevelScreenState extends State<LevelScreen> {
     _createPuzzle(); // Create puzzle with a solution
     _connectSolutionPath(); // Connect the solution as a path
     _scrambleMaze(); // Scramble maze
+    _startTimer();
+  }
+
+  void _startTimer() {
+    var timeAvailable = _timeLimit;
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (timeAvailable == 0) {
+          setState(() {
+            // Show faled mission
+            timer.cancel();
+          });
+        } else {
+          setState(() {
+            timeAvailable--;
+          });
+        }
+      },
+    );
   }
 
   void _createPuzzle() {
@@ -201,28 +266,31 @@ class _LevelScreenState extends State<LevelScreen> {
     var _whitespace = _tiles[_emptyTileColumn][_emptyTileRow];
     var _randomRow = 0;
     var _randomColumn = 0;
-    for (var scrambleStep = 0; scrambleStep <= 15; scrambleStep++) {
-      var _isRandomTileValid = false;
-      do {
-        _randomRow = _randomizer.nextInt(columns) + 1;
-        _randomColumn = _randomizer.nextInt(columns);
-        _isRandomTileValid = (_randomRow != _whitespace.row) &&
-            (_randomColumn != _whitespace.column);
-      } while (!_isRandomTileValid);
+    // While the maze is not completed, we scramble the pieces
+    while (_checkIfMazeCompleted(_tiles.first.first)) {
+      for (var scrambleStep = 0; scrambleStep <= 10; scrambleStep++) {
+        var _isRandomTileValid = false;
+        do {
+          _randomRow = _randomizer.nextInt(columns) + 1;
+          _randomColumn = _randomizer.nextInt(columns);
+          _isRandomTileValid = (_randomRow != _whitespace.row) &&
+              (_randomColumn != _whitespace.column);
+        } while (!_isRandomTileValid);
 
-      final _blankTile = _whitespace;
-      final _selectedTile = _tiles[_randomColumn][_randomRow];
-      _emptyTileRow = _whitespace.row;
-      _emptyTileColumn = _whitespace.column;
-      _whitespace = _tiles[_selectedTile.column][_selectedTile.row];
+        final _blankTile = _whitespace;
+        final _selectedTile = _tiles[_randomColumn][_randomRow];
+        _emptyTileRow = _whitespace.row;
+        _emptyTileColumn = _whitespace.column;
+        _whitespace = _tiles[_selectedTile.column][_selectedTile.row];
 
-      _tiles[_selectedTile.column][_selectedTile.row] = _blankTile
-        ..column = _selectedTile.column
-        ..row = _selectedTile.row;
+        _tiles[_selectedTile.column][_selectedTile.row] = _blankTile
+          ..column = _selectedTile.column
+          ..row = _selectedTile.row;
 
-      _tiles[_emptyTileColumn][_emptyTileRow] = _selectedTile
-        ..column = _emptyTileColumn
-        ..row = _emptyTileRow;
+        _tiles[_emptyTileColumn][_emptyTileRow] = _selectedTile
+          ..column = _emptyTileColumn
+          ..row = _emptyTileRow;
+      }
     }
   }
 
@@ -232,11 +300,16 @@ class _LevelScreenState extends State<LevelScreen> {
       return Container();
     }
     if (_tile.blocked) {
-      if (_tile.isFirst) {}
-      if (_tile.isFinal) {}
-      return Container();
-    }
-    if (!_tile.isPartOfSolution) {
+      if (_tile.isFirst) {
+      } else if (_tile.isFinal) {
+        _backgroundImage = Image.asset(
+          'assets/images/png/final.png',
+          fit: BoxFit.fill,
+        );
+      } else {
+        return Container();
+      }
+    } else if (!_tile.isPartOfSolution) {
       _backgroundImage = Image.asset(
         'assets/images/png/empty.png',
         fit: BoxFit.fill,
@@ -275,6 +348,19 @@ class _LevelScreenState extends State<LevelScreen> {
     }
     final _mazeCompleted = _checkIfMazeCompleted(_tiles.first.first);
     if (_mazeCompleted) {
+      _timer.cancel();
+      // Advance level difficulty
+      if (levelsCompleted / 3 == 0 &&
+          _levelDifficulty != DifficultyEnum.hardcore) {
+        if (_levelDifficulty == DifficultyEnum.easy) {
+          _levelDifficulty = DifficultyEnum.medium;
+        } else if (_levelDifficulty == DifficultyEnum.medium) {
+          _levelDifficulty = DifficultyEnum.hard;
+        } else if (_levelDifficulty == DifficultyEnum.hard) {
+          _levelDifficulty = DifficultyEnum.hardcore;
+        }
+      }
+      setState(_startLevel);
       print('SE GANÓ :D');
     }
   }
@@ -393,6 +479,12 @@ class _LevelScreenState extends State<LevelScreen> {
     return false;
   }
 
+  String parseTimeLeft(int timeLeft) {
+    final mins = timeLeft ~/ 60;
+    final seconds = timeLeft % 60;
+    return '$mins:${seconds > 10 ? seconds : '0$seconds'}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
@@ -419,15 +511,27 @@ class _LevelScreenState extends State<LevelScreen> {
               children: [
                 Align(
                   alignment: Alignment(
-                    isMobile ? Alignment.center.x : Alignment.bottomLeft.x - 0.45,
-                    Alignment.bottomLeft.y + 
-                      (isMobile ? 0.45 : isTablet ? 0.3 : 0.90),
+                    isMobile
+                        ? Alignment.center.x
+                        : Alignment.bottomLeft.x - 0.45,
+                    Alignment.bottomLeft.y +
+                        (isMobile
+                            ? 0.45
+                            : isTablet
+                                ? 0.3
+                                : 0.90),
                   ),
                   child: Assets.images.svg.pinkAndBluePlanet.svg(
-                    width: isMobile ? screenWidth * 0.5 :
-                      isTablet ? screenWidth * 0.3 : 500,
-                    height: isMobile ? screenWidth * 0.5 :
-                      isTablet ? screenWidth * 0.3 : 500,
+                    width: isMobile
+                        ? screenWidth * 0.5
+                        : isTablet
+                            ? screenWidth * 0.3
+                            : 500,
+                    height: isMobile
+                        ? screenWidth * 0.5
+                        : isTablet
+                            ? screenWidth * 0.3
+                            : 500,
                     //
                   ),
                 ),
@@ -476,12 +580,18 @@ class _LevelScreenState extends State<LevelScreen> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.only(
-                      top: isMobile ? 0 :
-                        isTablet ? screenHeight * 0.01 : screenHeight * 0.1,
+                      top: isMobile
+                          ? 0
+                          : isTablet
+                              ? screenHeight * 0.01
+                              : screenHeight * 0.1,
                     ),
                     child: SizedBox(
-                      width: isMobile ? screenWidth * 0.9 :
-                        isTablet ? screenWidth * 0.6 : screenWidth * 0.25,
+                      width: isMobile
+                          ? screenWidth * 0.9
+                          : isTablet
+                              ? screenWidth * 0.6
+                              : screenWidth * 0.25,
                       child: GridView.builder(
                         itemCount: columns * rows,
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
