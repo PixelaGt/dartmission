@@ -399,85 +399,103 @@ class _LevelScreenState extends State<LevelScreen> {
     final screenWidth = media.size.width;
     final screenHeight = media.size.height;
 
+    // final height = media.size.height;
+    final isMobile = screenWidth <= 760;
+    final isTablet = screenWidth > 760 && screenWidth <= 1024;
+
     return ScreenWrapper(
-      child: Stack(
-        children: [
-          Assets.images.svg.backgroundSpace2.svg(
-            fit: BoxFit.fill,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/jpg/background_space.jpg'),
+            fit: BoxFit.cover,
           ),
-          Align(
-            alignment: Alignment(
-              Alignment.bottomLeft.x - 0.45,
-              Alignment.bottomLeft.y + 0.90,
+        ),
+        child: Stack(
+          children: [
+            Align(
+              alignment: Alignment(
+                isMobile ? Alignment.center.x : Alignment.bottomLeft.x - 0.45,
+                Alignment.bottomLeft.y + (isMobile ? 0.45 : isTablet ? 0.3 : 0.90),
+              ),
+              child: Assets.images.svg.pinkAndBluePlanet.svg(
+                width: isMobile ? screenWidth * 0.5 :
+                  isTablet ? screenWidth * 0.3 : 500,
+                height: isMobile ? screenWidth * 0.5 :
+                  isTablet ? screenWidth * 0.3 : 500,
+                //
+              ),
             ),
-            child: Assets.images.svg.pinkAndBluePlanet.svg(
-              width: 500,
-              height: 500,
-              //
+            Align(
+              child: Assets.images.svg.pinkPlanet.svg(
+                width: isMobile ? screenWidth : screenWidth * 0.5
+              ),
             ),
-          ),
-          Align(
-            child: Assets.images.svg.pinkPlanet.svg(),
-          ),
-          Align(
-            alignment: Alignment(
-              Alignment.topRight.x + 0.07,
-              Alignment.topCenter.y + 0.5,
+            Align(
+              alignment: Alignment(
+                Alignment.topRight.x + 0.07,
+                Alignment.topCenter.y + (isMobile ? 0.2 : 0.5),
+              ),
+              child: Assets.images.svg.orangePlanet.svg(
+                width: isMobile ? screenWidth * 0.1 : 100,
+                height: isMobile ? screenWidth * 0.1 : 100,
+                //
+              ),
             ),
-            child: Assets.images.svg.orangePlanet.svg(
-              width: 100,
-              height: 100,
-              //
+            Align(
+              alignment: Alignment(
+                Alignment.center.x - 0.8,
+                Alignment.centerLeft.y - (isMobile ? 0.8 : 0.5),
+              ),
+              child: Assets.images.svg.pinkAndCianPlanet.svg(
+                width: isMobile ? screenWidth * 0.2 : 125,
+                height: isMobile ? screenWidth * 0.2 : 125,
+                //
+              ),
             ),
-          ),
-          Align(
-            alignment: Alignment(
-              Alignment.center.x - 0.8,
-              Alignment.centerLeft.y - 0.5,
+            Align(
+              alignment: Alignment(
+                Alignment.topLeft.x + 0.1,
+                Alignment.topLeft.y + 0.1,
+              ),
+              child: Assets.images.svg.title.svg(
+                width: 50,
+                height: 50,
+                //
+              ),
             ),
-            child: Assets.images.svg.pinkAndCianPlanet.svg(
-              width: 125,
-              height: 125,
-              //
-            ),
-          ),
-          Align(
-            alignment: Alignment(
-              Alignment.topLeft.x + 0.1,
-              Alignment.topLeft.y + 0.1,
-            ),
-            child: Assets.images.svg.title.svg(
-              width: 50,
-              height: 50,
-              //
-            ),
-          ),
-          Align(
-            alignment: Alignment(
-              Alignment.center.x,
-              Alignment.center.y,
-            ),
-            child: Padding(
-              padding: EdgeInsets.only(top: screenHeight * 0.1),
-              child: SizedBox(
-                width: screenWidth / 4,
-                child: GridView.builder(
-                  itemCount: columns * rows,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: columns,
-                    crossAxisSpacing: 4,
-                    mainAxisSpacing: 4,
+            Align(
+              alignment: Alignment(
+                Alignment.center.x,
+                Alignment.center.y,
+              ),
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: isMobile ? 0 :
+                    isTablet ? screenHeight * 0.01 : screenHeight * 0.1,
+                ),
+                child: SizedBox(
+                  width: isMobile ? screenWidth * 0.9 :
+                    isTablet ? screenWidth * 0.6 : screenWidth * 0.25,
+                  child: GridView.builder(
+                    itemCount: columns * rows,
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: columns,
+                      crossAxisSpacing: 4,
+                      mainAxisSpacing: 4,
+                    ),
+                    itemBuilder: (BuildContext context, int index) {
+                      final x = index % columns;
+                      final y = index ~/ columns;
+                      return buildCard(_tiles[x][y]);
+                    },
                   ),
-                  itemBuilder: (BuildContext context, int index) {
-                    final x = index % columns;
-                    final y = index ~/ columns;
-                    return buildCard(_tiles[x][y]);
-                  },
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
