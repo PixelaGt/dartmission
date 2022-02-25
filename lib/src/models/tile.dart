@@ -10,6 +10,7 @@ class Tile {
   int row;
   bool blocked;
 
+  bool isPartOfSolution = false;
   bool isFinal = false;
   bool isFirst = false;
   bool visited = false;

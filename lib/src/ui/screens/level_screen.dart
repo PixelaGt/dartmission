@@ -78,6 +78,47 @@ class _LevelScreenState extends State<LevelScreen> {
     _solutionStack.push(_exit);
   }
 
+  Tile? _getNext(Tile _current) {
+    final neighbours = <Tile>[];
+
+    //left
+    if (_current.column > 0) {
+      final _leftTile = _tiles[_current.column - 1][_current.row];
+      if (!_leftTile.visited && !_leftTile.blocked && !_leftTile.empty) {
+        neighbours.add(_leftTile);
+      }
+    }
+
+    //right
+    if (_current.column < columns - 1) {
+      final _rightTile = _tiles[_current.column + 1][_current.row];
+      if (!_rightTile.visited && !_rightTile.blocked && !_rightTile.empty) {
+        neighbours.add(_rightTile);
+      }
+    }
+
+    //Top
+    if (_current.row > 0) {
+      final _topTile = _tiles[_current.column][_current.row - 1];
+      if (!_topTile.visited && !_topTile.blocked && !_topTile.empty) {
+        neighbours.add(_topTile);
+      }
+    }
+
+    //Bottom
+    if (_current.row < rows - 1) {
+      final _bottomTile = _tiles[_current.column][_current.row + 1];
+      if (!_bottomTile.visited && !_bottomTile.blocked && !_bottomTile.empty) {
+        neighbours.add(_bottomTile);
+      }
+    }
+    if (neighbours.isNotEmpty) {
+      final index = _randomizer.nextInt(neighbours.length);
+      return neighbours[index];
+    }
+    return null;
+  }
+
   // Method to select a random, playable tyle to be emtpy
   void _setEmptyTile() {
     late int _selectedRow;
@@ -109,7 +150,7 @@ class _LevelScreenState extends State<LevelScreen> {
     for (var i = 0; i < _solutionTiles.length - 1; i++) {
       // Will always evaluate the current solution tile, and the next tile in
       // The solution array in order to know in which direction to go
-      final _currentTile = _solutionTiles[i];
+      final _currentTile = _solutionTiles[i]..isPartOfSolution = true;
       final _nextTile = _solutionTiles[i + 1];
       // Set the entry direction of the tile
       _solutionTiles[i].enterDirection = _entryDirection;
@@ -185,47 +226,6 @@ class _LevelScreenState extends State<LevelScreen> {
     }
   }
 
-  Tile? _getNext(Tile _current) {
-    final neighbours = <Tile>[];
-
-    //left
-    if (_current.column > 0) {
-      final _leftTile = _tiles[_current.column - 1][_current.row];
-      if (!_leftTile.visited && !_leftTile.blocked && !_leftTile.empty) {
-        neighbours.add(_leftTile);
-      }
-    }
-
-    //right
-    if (_current.column < columns - 1) {
-      final _rightTile = _tiles[_current.column + 1][_current.row];
-      if (!_rightTile.visited && !_rightTile.blocked && !_rightTile.empty) {
-        neighbours.add(_rightTile);
-      }
-    }
-
-    //Top
-    if (_current.row > 0) {
-      final _topTile = _tiles[_current.column][_current.row - 1];
-      if (!_topTile.visited && !_topTile.blocked && !_topTile.empty) {
-        neighbours.add(_topTile);
-      }
-    }
-
-    //Bottom
-    if (_current.row < rows - 1) {
-      final _bottomTile = _tiles[_current.column][_current.row + 1];
-      if (!_bottomTile.visited && !_bottomTile.blocked && !_bottomTile.empty) {
-        neighbours.add(_bottomTile);
-      }
-    }
-    if (neighbours.isNotEmpty) {
-      final index = _randomizer.nextInt(neighbours.length);
-      return neighbours[index];
-    }
-    return null;
-  }
-
   Widget buildCard(Tile _tile) {
     Image? _backgroundImage;
     if (_tile.empty) {
@@ -236,13 +236,19 @@ class _LevelScreenState extends State<LevelScreen> {
       if (_tile.isFinal) {}
       return Container();
     }
-
-    // Road Direction
-    _backgroundImage = Image.asset(
-      'assets/images/png/'
-      '${_tile.enterDirection.name}_${_tile.exitDirection.name}.png',
-      fit: BoxFit.fill,
-    );
+    if (!_tile.isPartOfSolution) {
+      _backgroundImage = Image.asset(
+        'assets/images/jpg/background_space.jpg',
+        fit: BoxFit.fill,
+      );
+    } else {
+      // Road Direction
+      _backgroundImage = Image.asset(
+        'assets/images/png/'
+        '${_tile.enterDirection.name}_${_tile.exitDirection.name}.png',
+        fit: BoxFit.fill,
+      );
+    }
 
     return GestureDetector(
       onTap: () {
@@ -340,7 +346,10 @@ class _LevelScreenState extends State<LevelScreen> {
       return true;
     }
     // Check tile is availble
-    if (!_currentTile.isFirst && (_currentTile.empty || _currentTile.blocked)) {
+    if (!_currentTile.isFirst &&
+        (_currentTile.empty ||
+            _currentTile.blocked ||
+            !_currentTile.isPartOfSolution)) {
       return false;
     }
 
