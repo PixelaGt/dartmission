@@ -36,6 +36,9 @@ class $AssetsImagesJpgGen {
 class $AssetsImagesPngGen {
   const $AssetsImagesPngGen();
 
+  /// File path: assets/images/png/Logo.png
+  AssetGenImage get logo => const AssetGenImage('assets/images/png/Logo.png');
+
   /// File path: assets/images/png/down_left.png
   AssetGenImage get downLeft =>
       const AssetGenImage('assets/images/png/down_left.png');
@@ -81,6 +84,10 @@ class $AssetsImagesPngGen {
   /// File path: assets/images/png/right_up.png
   AssetGenImage get rightUp =>
       const AssetGenImage('assets/images/png/right_up.png');
+
+  /// File path: assets/images/png/splash_web.png
+  AssetGenImage get splashWeb =>
+      const AssetGenImage('assets/images/png/splash_web.png');
 
   /// File path: assets/images/png/up_down.png
   AssetGenImage get upDown =>
