@@ -1,6 +1,7 @@
 import 'package:dartmission/gen/assets.gen.dart';
 import 'package:dartmission/src/ui/screens/level_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 
 class InitialScreenView extends StatefulWidget {
@@ -13,17 +14,29 @@ class InitialScreenView extends StatefulWidget {
 class InitialScreenViewState extends State<InitialScreenView> {
   // Controller for playback
   late RiveAnimationController _controller;
+  late Artboard? _artboard;
 
   @override
   void initState() {
     super.initState();
-    _controller = SimpleAnimation('floating');
+    _loadAnimation();
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadAnimation() async {
+    final animationBytes = await rootBundle.load(Assets.rive.pixman.path);
+    final riveFile = RiveFile.import(animationBytes);
+    var artboard = riveFile.mainArtboard;
+    _controller = SimpleAnimation('floating');
+    artboard = riveFile.mainArtboard
+      ..clip = false
+      ..addController(_controller);
+    setState(() => _artboard = artboard);
   }
 
   @override
@@ -127,15 +140,15 @@ class InitialScreenViewState extends State<InitialScreenView> {
               Alignment.center.y,
             ),
             child: SizedBox(
-              height: 150,
-              width: 150,
-              child: RiveAnimation.asset(
-                Assets.rive.pixman.path,
-                antialiasing: false,
-                alignment: Alignment.center,
-                animations: const ['floating'],
-                controllers: [_controller],
-              ),
+              height: MediaQuery.of(context).size.width * 0.15,
+              width: MediaQuery.of(context).size.width * 0.20,
+              child: _artboard == null
+                  ? Container()
+                  : Rive(
+                      artboard: _artboard!,
+                      antialiasing: false,
+                      alignment: Alignment.center,
+                    ),
             ),
           ),
         ],
