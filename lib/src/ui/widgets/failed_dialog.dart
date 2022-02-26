@@ -1,15 +1,35 @@
 import 'package:dartmission/gen/assets.gen.dart';
 import 'package:dartmission/src/ui/screens/initial_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 
 class FailedDialog extends StatefulWidget {
-  const FailedDialog({Key? key}) : super(key: key);
+  const FailedDialog({
+    Key? key,
+    required this.onRestart,
+  }) : super(key: key);
+
+  final VoidCallback onRestart;
 
   @override
   State createState() => _FailedDialogState();
 }
 
 class _FailedDialogState extends State<FailedDialog> {
+  late RiveAnimationController _controller;
+
+  @override
+  void initState() {
+    _controller = SimpleAnimation('floating');
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
@@ -19,6 +39,7 @@ class _FailedDialogState extends State<FailedDialog> {
 
     return AlertDialog(
       backgroundColor: Colors.black.withOpacity(0.2),
+      insetPadding: EdgeInsets.zero,
       content: SizedBox(
         width: double.maxFinite,
         height: double.maxFinite,
@@ -43,6 +64,7 @@ class _FailedDialogState extends State<FailedDialog> {
               children: [
                 GestureDetector(
                   onTap: () {
+                    Navigator.pop(context);
                     Navigator.push(
                       context,
                       MaterialPageRoute<void>(
@@ -51,7 +73,7 @@ class _FailedDialogState extends State<FailedDialog> {
                     );
                   },
                   child: Assets.images.svg.exitBtn.svg(
-                    height: isMobile ? 30 : 75,
+                    height: isMobile ? 40 : 75,
                     width: isMobile ? 24 : 75,
                   ),
                 ),
@@ -59,13 +81,33 @@ class _FailedDialogState extends State<FailedDialog> {
                   width: isMobile ? screenWidth / 30 : screenWidth / 30,
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.pop(context);
+                    widget.onRestart.call();
+                  },
                   child: Assets.images.svg.restartBtn.svg(
-                    height: isMobile ? 30 : 75,
+                    height: isMobile ? 40 : 75,
                     width: isMobile ? 24 : 75,
                   ),
                 ),
               ],
+            ),
+            Align(
+              alignment: Alignment(
+                Alignment.centerRight.x - 0.25,
+                Alignment.center.y,
+              ),
+              child: SizedBox(
+                height: 150,
+                width: 150,
+                child: RiveAnimation.asset(
+                  Assets.rive.pixman.path,
+                  antialiasing: false,
+                  alignment: Alignment.center,
+                  animations: const ['floating'],
+                  controllers: [_controller],
+                ),
+              ),
             ),
           ],
         ),

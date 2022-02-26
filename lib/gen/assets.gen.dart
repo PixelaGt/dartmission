@@ -51,6 +51,13 @@ class $AssetsImagesPngGen {
   /// File path: assets/images/png/empty.png
   AssetGenImage get empty => const AssetGenImage('assets/images/png/empty.png');
 
+  /// File path: assets/images/png/goal.png
+  AssetGenImage get goal => const AssetGenImage('assets/images/png/goal.png');
+
+  /// File path: assets/images/png/inicial.png
+  AssetGenImage get inicial =>
+      const AssetGenImage('assets/images/png/inicial.png');
+
   /// File path: assets/images/png/left_down.png
   AssetGenImage get leftDown =>
       const AssetGenImage('assets/images/png/left_down.png');
