@@ -13,8 +13,8 @@ class InitialScreenView extends StatefulWidget {
 
 class InitialScreenViewState extends State<InitialScreenView> {
   // Controller for playback
-  late RiveAnimationController _controller;
-  late Artboard? _artboard;
+  RiveAnimationController? _controller;
+  Artboard? _artboard;
 
   @override
   void initState() {
@@ -24,7 +24,9 @@ class InitialScreenViewState extends State<InitialScreenView> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (_controller != null) {
+      _controller!.dispose();
+    }
     super.dispose();
   }
 
@@ -35,7 +37,7 @@ class InitialScreenViewState extends State<InitialScreenView> {
     _controller = SimpleAnimation('floating');
     artboard = riveFile.mainArtboard
       ..clip = false
-      ..addController(_controller);
+      ..addController(_controller!);
     setState(() => _artboard = artboard);
   }
 

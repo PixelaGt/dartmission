@@ -2,7 +2,7 @@
     package="tech.pixela.dartmission">
    <application
         android:label="${appName}"
-        android:icon="@mipmap/logo_arg">
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

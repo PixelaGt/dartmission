@@ -30,9 +30,11 @@ dev_dependencies:
   very_good_analysis: ^2.4.0
 
 flutter_icons:
-  android: "logo_arg"
+  android: true
   ios: true
-  image_path: "assets/images/png/Logo-02.png"
+  image_path: "assets/images/png/launcher.png"
+  adaptive_icon_background: "#190946"
+  adaptive_icon_foreground: "assets/images/png/launcher.png"
 
 flutter_native_splash:
   background_image: "assets/images/png/splash_movil.png"
