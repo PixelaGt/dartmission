@@ -1,10 +1,24 @@
+import 'package:dartmission/src/ui/screens/initial_screen.dart';
+import 'package:dartmission/src/ui/themes/theme.dart';
 import 'package:flutter/material.dart';
 
-class DartmissionApp extends StatelessWidget {
+class DartmissionApp extends StatefulWidget {
   const DartmissionApp({Key? key}) : super(key: key);
 
   @override
+  State<DartmissionApp> createState() => _DartmissionAppState();
+}
+
+class _DartmissionAppState extends State<DartmissionApp> {
+  @override
   Widget build(BuildContext context) {
-    return Container();
+    return MaterialApp(
+      theme: dartMissionTheme,
+      //  debugShowCheckedModeBanner: false,
+      home: const Scaffold(
+        backgroundColor: Color(0xFF331076),
+        body: SafeArea(child: InitialScreenView()),
+      ),
+    );
   }
 }

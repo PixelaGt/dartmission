@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="80" viewBox="0 0 300 80">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#10adbf"/>
+      <stop offset="1" stop-color="#166e77"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#0ce0f6"/>
+      <stop offset="1" stop-color="#0ce0f6" stop-opacity="0.502"/>
+    </linearGradient>
+  </defs>
+  <g id="Start-btn" transform="translate(-1391 -8817)">
+    <g id="Rectángulo_409" data-name="Rectángulo 409" transform="translate(1391 8817)" stroke="#015a63" stroke-width="3" fill="url(#linear-gradient)">
+      <rect width="300" height="80" rx="20" stroke="none"/>
+      <rect x="1.5" y="1.5" width="297" height="77" rx="18.5" fill="none"/>
+    </g>
+    <rect id="Rectángulo_410" data-name="Rectángulo 410" width="285" height="70" rx="20" transform="translate(1399 8822)" fill="url(#linear-gradient-2)"/>
+    <ellipse id="Elipse_126" data-name="Elipse 126" cx="3" cy="2" rx="3" ry="2" transform="matrix(0.883, -0.469, 0.469, 0.883, 1417.531, 8846.108)" fill="#fff"/>
+    <path id="Vector" d="M7.289.226c-7.5-1.615-9.8,5.933-4.113,6.7S15.193,1.929,7.289.226Z" transform="translate(1425 8833)" fill="#fff"/>
+    <text id="Exit" transform="translate(1499 8870)" fill="#fff" font-size="36" font-family="Source Code Pro" font-weight="600"><tspan x="0" y="0">EXIT</tspan></text>
+  </g>
+</svg>
