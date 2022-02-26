@@ -1,7 +1,5 @@
 import 'package:dartmission/gen/assets.gen.dart';
 import 'package:dartmission/src/ui/screens/level_screen.dart';
-import 'package:dartmission/src/ui/widgets/failed_dialog.dart';
-import 'package:dartmission/src/ui/widgets/successfully_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 
@@ -20,6 +18,12 @@ class InitialScreenViewState extends State<InitialScreenView> {
   void initState() {
     super.initState();
     _controller = SimpleAnimation('floating');
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -105,21 +109,15 @@ class InitialScreenViewState extends State<InitialScreenView> {
             ),
             child: GestureDetector(
               onTap: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute<void>(
-                //     builder: (context) => const LevelScreen(),
-                //   ),
-                // );
-
-                showDialog<String>(
-                  context: context,
-                  builder: (BuildContext context) => const FailedDialog(),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (context) => const LevelScreen(),
+                  ),
                 );
               },
               child: Assets.images.svg.startBtn.svg(
                 height: isMobile ? 48 : 75,
-                //
               ),
             ),
           ),

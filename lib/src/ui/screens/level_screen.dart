@@ -6,8 +6,11 @@ import 'package:dartmission/src/models/custom_stack.dart';
 import 'package:dartmission/src/models/difficulty_enum.dart';
 import 'package:dartmission/src/models/directions_enum.dart';
 import 'package:dartmission/src/models/tile.dart';
+import 'package:dartmission/src/ui/widgets/failed_dialog.dart';
 import 'package:dartmission/src/ui/widgets/screen_wrapper.dart';
+import 'package:dartmission/src/ui/widgets/successfully_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 
 class LevelScreen extends StatefulWidget {
   const LevelScreen({Key? key}) : super(key: key);
@@ -17,6 +20,8 @@ class LevelScreen extends StatefulWidget {
 }
 
 class _LevelScreenState extends State<LevelScreen> {
+  late RiveAnimationController _controller;
+
   late Timer _timer;
   late int _timeLimit;
   int levelsCompleted = 0;
@@ -30,15 +35,18 @@ class _LevelScreenState extends State<LevelScreen> {
   late int _emptyTileRow; // Row where the empty tyle is
   late int _emptyTileColumn; // Column where the empty tyle is
   final Random _randomizer = Random(); // Randomizer
+  bool _gameInProgress = false;
 
   @override
   void dispose() {
     _timer.cancel();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
+    _controller = SimpleAnimation('iddle');
     super.initState();
     _startLevel();
   }
@@ -93,15 +101,29 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   void _startTimer() {
+    setState(() {
+      _gameInProgress = true;
+    });
     var timeAvailable = _timeLimit;
     const oneSec = Duration(seconds: 1);
     _timer = Timer.periodic(
       oneSec,
       (Timer timer) {
         if (timeAvailable == 0) {
+          timer.cancel();
           setState(() {
+            _gameInProgress = false;
             // Show faled mission
-            timer.cancel();
+            showDialog<String>(
+              context: context,
+              builder: (BuildContext context) => FailedDialog(
+                onRestart: () {
+                  levelsCompleted = 0;
+                  _levelDifficulty = DifficultyEnum.easy;
+                  setState(_startLevel);
+                },
+              ),
+            );
           });
         } else {
           setState(() {
@@ -301,9 +323,41 @@ class _LevelScreenState extends State<LevelScreen> {
     }
     if (_tile.blocked) {
       if (_tile.isFirst) {
-      } else if (_tile.isFinal) {
+        return Card(
+          color: Colors.transparent,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 3,
+          child: Stack(
+            children: [
+              Image.asset(
+                'assets/images/png/inicial.png',
+                fit: BoxFit.fill,
+              ),
+              SizedBox(
+                height: 150,
+                width: 150,
+                child: RiveAnimation.asset(
+                  Assets.rive.pixman.path,
+                  antialiasing: false,
+                  alignment: Alignment.center,
+                  animations: const ['iddle'],
+                  controllers: [_controller],
+                ),
+              ),
+            ],
+          ),
+        );
+        // _backgroundImage = Image.asset(
+        //   'assets/images/png/inicial.png',
+        //   fit: BoxFit.fill,
+        // );
+      }
+      if (_tile.isFinal) {
         _backgroundImage = Image.asset(
-          'assets/images/png/final.png',
+          'assets/images/png/goal.png',
           fit: BoxFit.fill,
         );
       } else {
@@ -350,19 +404,26 @@ class _LevelScreenState extends State<LevelScreen> {
     if (_mazeCompleted) {
       _timer.cancel();
       levelsCompleted++;
-      // Advance level difficulty
-      if (levelsCompleted % 3 == 0 &&
-          _levelDifficulty != DifficultyEnum.hardcore) {
-        if (_levelDifficulty == DifficultyEnum.easy) {
-          _levelDifficulty = DifficultyEnum.medium;
-        } else if (_levelDifficulty == DifficultyEnum.medium) {
-          _levelDifficulty = DifficultyEnum.hard;
-        } else if (_levelDifficulty == DifficultyEnum.hard) {
-          _levelDifficulty = DifficultyEnum.hardcore;
-        }
-      }
-      setState(_startLevel);
-      print('SE GANÓ :D');
+
+      showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => SuccessfullyDialog(
+          onContinue: () {
+            // Advance level difficulty
+            if (levelsCompleted % 3 == 0 &&
+                _levelDifficulty != DifficultyEnum.hardcore) {
+              if (_levelDifficulty == DifficultyEnum.easy) {
+                _levelDifficulty = DifficultyEnum.medium;
+              } else if (_levelDifficulty == DifficultyEnum.medium) {
+                _levelDifficulty = DifficultyEnum.hard;
+              } else if (_levelDifficulty == DifficultyEnum.hard) {
+                _levelDifficulty = DifficultyEnum.hardcore;
+              }
+            }
+            setState(_startLevel);
+          },
+        ),
+      );
     }
   }
 
@@ -483,7 +544,7 @@ class _LevelScreenState extends State<LevelScreen> {
   String parseTimeLeft(int timeLeft) {
     final mins = timeLeft ~/ 60;
     final seconds = timeLeft % 60;
-    return '$mins:${seconds > 10 ? seconds : '0$seconds'}';
+    return '$mins:${seconds >= 10 ? seconds : '0$seconds'}';
   }
 
   @override
@@ -579,34 +640,51 @@ class _LevelScreenState extends State<LevelScreen> {
                     Alignment.center.x,
                     Alignment.center.y,
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      top: isMobile
-                          ? 0
-                          : isTablet
-                              ? screenHeight * 0.01
-                              : screenHeight * 0.1,
-                    ),
-                    child: SizedBox(
-                      width: isMobile
-                          ? screenWidth * 0.9
-                          : isTablet
-                              ? screenWidth * 0.6
-                              : screenWidth * 0.25,
-                      child: GridView.builder(
-                        itemCount: columns * rows,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: columns,
-                          crossAxisSpacing: 4,
-                          mainAxisSpacing: 4,
-                        ),
-                        itemBuilder: (BuildContext context, int index) {
-                          final x = index % columns;
-                          final y = index ~/ columns;
-                          return buildCard(_tiles[x][y]);
-                        },
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 100,
                       ),
-                    ),
+                      if (_gameInProgress)
+                        Text(
+                          parseTimeLeft(_timeLimit - _timer.tick),
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6!
+                              .apply(color: Colors.white),
+                        ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: isMobile
+                              ? 0
+                              : isTablet
+                                  ? screenHeight * 0.01
+                                  : screenHeight * 0.1,
+                        ),
+                        child: SizedBox(
+                          width: isMobile
+                              ? screenWidth * 0.9
+                              : isTablet
+                                  ? screenWidth * 0.6
+                                  : screenWidth * 0.25,
+                          child: GridView.builder(
+                            shrinkWrap: true,
+                            itemCount: columns * rows,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: columns,
+                              crossAxisSpacing: 4,
+                              mainAxisSpacing: 4,
+                            ),
+                            itemBuilder: (BuildContext context, int index) {
+                              final x = index % columns;
+                              final y = index ~/ columns;
+                              return buildCard(_tiles[x][y]);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
