@@ -32,7 +32,7 @@ dev_dependencies:
 flutter_icons:
   android: "logo_arg"
   ios: true
-  image_path: "assets/images/png/Logo.png"
+  image_path: "assets/images/png/Logo-02.png"
 
 flutter_native_splash:
   background_image: "assets/images/png/splash_movil.png"
