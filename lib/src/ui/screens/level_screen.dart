@@ -6,11 +6,11 @@ import 'package:dartmission/src/models/custom_stack.dart';
 import 'package:dartmission/src/models/difficulty_enum.dart';
 import 'package:dartmission/src/models/directions_enum.dart';
 import 'package:dartmission/src/models/tile.dart';
-import 'package:dartmission/src/ui/widgets/failed_dialog.dart';
-import 'package:dartmission/src/ui/widgets/screen_wrapper.dart';
-import 'package:dartmission/src/ui/widgets/successfully_dialog.dart';
+import 'package:dartmission/src/ui/widgets/level/failed_dialog.dart';
+import 'package:dartmission/src/ui/widgets/level/screen_wrapper.dart';
+import 'package:dartmission/src/ui/widgets/level/space_item.dart';
+import 'package:dartmission/src/ui/widgets/level/successfully_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
 
 class LevelScreen extends StatefulWidget {
   const LevelScreen({Key? key}) : super(key: key);
@@ -20,8 +20,6 @@ class LevelScreen extends StatefulWidget {
 }
 
 class _LevelScreenState extends State<LevelScreen> {
-  late RiveAnimationController _controller;
-
   late Timer _timer;
   late int _timeLimit;
   int levelsCompleted = 0;
@@ -40,13 +38,11 @@ class _LevelScreenState extends State<LevelScreen> {
   @override
   void dispose() {
     _timer.cancel();
-    _controller.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
-    _controller = SimpleAnimation('iddle');
     super.initState();
     _startLevel();
   }
@@ -316,83 +312,6 @@ class _LevelScreenState extends State<LevelScreen> {
     }
   }
 
-  Widget buildCard(Tile _tile) {
-    Image? _backgroundImage;
-    if (_tile.empty) {
-      return Container();
-    }
-    if (_tile.blocked) {
-      if (_tile.isFirst) {
-        return Card(
-          color: Colors.transparent,
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          elevation: 3,
-          child: Stack(
-            children: [
-              Image.asset(
-                'assets/images/png/inicial.png',
-                fit: BoxFit.fill,
-              ),
-              SizedBox(
-                height: 150,
-                width: 150,
-                child: RiveAnimation.asset(
-                  Assets.rive.pixman.path,
-                  antialiasing: false,
-                  alignment: Alignment.center,
-                  animations: const ['iddle'],
-                  controllers: [_controller],
-                ),
-              ),
-            ],
-          ),
-        );
-        // _backgroundImage = Image.asset(
-        //   'assets/images/png/inicial.png',
-        //   fit: BoxFit.fill,
-        // );
-      }
-      if (_tile.isFinal) {
-        _backgroundImage = Image.asset(
-          'assets/images/png/goal.png',
-          fit: BoxFit.fill,
-        );
-      } else {
-        return Container();
-      }
-    } else if (!_tile.isPartOfSolution) {
-      _backgroundImage = Image.asset(
-        'assets/images/png/empty.png',
-        fit: BoxFit.fill,
-      );
-    } else {
-      // Road Direction
-      _backgroundImage = Image.asset(
-        'assets/images/png/'
-        '${_tile.enterDirection.name}_${_tile.exitDirection.name}.png',
-        fit: BoxFit.fill,
-      );
-    }
-
-    return GestureDetector(
-      onTap: () {
-        _onTileTapped(_tile);
-      },
-      child: Card(
-        color: Colors.transparent,
-        clipBehavior: Clip.antiAliasWithSaveLayer,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
-        elevation: 3,
-        child: _backgroundImage,
-      ),
-    );
-  }
-
   void _onTileTapped(Tile _tileTapped) {
     _moveTile(_tileTapped);
     for (var c = 0; c < columns; c++) {
@@ -565,7 +484,9 @@ class _LevelScreenState extends State<LevelScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/jpg/background_space.jpg'),
+                image: AssetImage(
+                  'assets/images/jpg/background_space.jpg',
+                ),
                 fit: BoxFit.cover,
               ),
             ),
@@ -594,7 +515,6 @@ class _LevelScreenState extends State<LevelScreen> {
                         : isTablet
                             ? screenWidth * 0.3
                             : 500,
-                    //
                   ),
                 ),
                 Align(
@@ -610,7 +530,6 @@ class _LevelScreenState extends State<LevelScreen> {
                   child: Assets.images.svg.orangePlanet.svg(
                     width: isMobile ? screenWidth * 0.1 : 100,
                     height: isMobile ? screenWidth * 0.1 : 100,
-                    //
                   ),
                 ),
                 Align(
@@ -621,7 +540,6 @@ class _LevelScreenState extends State<LevelScreen> {
                   child: Assets.images.svg.pinkAndCianPlanet.svg(
                     width: isMobile ? screenWidth * 0.2 : 125,
                     height: isMobile ? screenWidth * 0.2 : 125,
-                    //
                   ),
                 ),
                 Align(
@@ -632,7 +550,6 @@ class _LevelScreenState extends State<LevelScreen> {
                   child: Assets.images.svg.title.svg(
                     width: 50,
                     height: 50,
-                    //
                   ),
                 ),
                 Align(
@@ -679,7 +596,10 @@ class _LevelScreenState extends State<LevelScreen> {
                             itemBuilder: (BuildContext context, int index) {
                               final x = index % columns;
                               final y = index ~/ columns;
-                              return buildCard(_tiles[x][y]);
+                              return SpaceItem(
+                                onTilePressed: _onTileTapped,
+                                tile: _tiles[x][y],
+                              );
                             },
                           ),
                         ),

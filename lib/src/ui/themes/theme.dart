@@ -1,8 +1,12 @@
+import 'package:dartmission/src/ui/themes/color.dart';
 import 'package:dartmission/src/ui/themes/typo.dart';
 import 'package:flutter/material.dart';
 
 ThemeData dartMissionTheme = ThemeData(
   textTheme: dartMissionTextTheme,
+  colorScheme: const ColorScheme.dark(
+    primary: purple,
+  ),
   // colorScheme: const ColorScheme(
   //   background: aliceBluePrimary,
   //   brightness: Brightness.light,

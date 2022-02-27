@@ -1,34 +1,17 @@
 import 'package:dartmission/gen/assets.gen.dart';
 import 'package:dartmission/src/ui/screens/initial_screen.dart';
+import 'package:dartmission/src/ui/themes/color.dart';
+import 'package:dartmission/src/ui/widgets/common/space_button.dart';
+import 'package:dartmission/src/ui/widgets/common/spaceman.dart';
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
 
-class FailedDialog extends StatefulWidget {
+class FailedDialog extends StatelessWidget {
   const FailedDialog({
     Key? key,
     required this.onRestart,
   }) : super(key: key);
 
   final VoidCallback onRestart;
-
-  @override
-  State createState() => _FailedDialogState();
-}
-
-class _FailedDialogState extends State<FailedDialog> {
-  late RiveAnimationController _controller;
-
-  @override
-  void initState() {
-    _controller = SimpleAnimation('floating');
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,33 +45,32 @@ class _FailedDialogState extends State<FailedDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
+                SpaceButton(
+                  image: Assets.images.svg.exitBtn,
+                  height: isMobile ? 40 : 75,
+                  width: isMobile ? 24 : 75,
+                  color: aqua,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (context) => const InitialScreenView(),
+                        builder: (context) => const InitialScreen(),
                       ),
                     );
                   },
-                  child: Assets.images.svg.exitBtn.svg(
-                    height: isMobile ? 40 : 75,
-                    width: isMobile ? 24 : 75,
-                  ),
                 ),
                 SizedBox(
                   width: isMobile ? screenWidth / 30 : screenWidth / 30,
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    widget.onRestart.call();
+                SpaceButton(
+                  image: Assets.images.svg.restartBtn,
+                  color: orange,
+                  height: isMobile ? 40 : 75,
+                  width: isMobile ? 24 : 75,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    onRestart.call();
                   },
-                  child: Assets.images.svg.restartBtn.svg(
-                    height: isMobile ? 40 : 75,
-                    width: isMobile ? 24 : 75,
-                  ),
                 ),
               ],
             ),
@@ -97,16 +79,10 @@ class _FailedDialogState extends State<FailedDialog> {
                 Alignment.centerRight.x - 0.25,
                 Alignment.center.y,
               ),
-              child: SizedBox(
+              child: const Spaceman(
+                animation: 'floating',
                 height: 150,
                 width: 150,
-                child: RiveAnimation.asset(
-                  Assets.rive.pixman.path,
-                  antialiasing: false,
-                  alignment: Alignment.center,
-                  animations: const ['floating'],
-                  controllers: [_controller],
-                ),
               ),
             ),
           ],
