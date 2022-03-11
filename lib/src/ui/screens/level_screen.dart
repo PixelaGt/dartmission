@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dartmission/src/models/difficulty_tracker.dart';
 import 'package:dartmission/src/models/maze.dart';
 import 'package:dartmission/src/models/tile.dart';
+import 'package:dartmission/src/ui/widgets/common/background_scene.dart';
 import 'package:dartmission/src/ui/widgets/level/failed_dialog.dart';
 import 'package:dartmission/src/ui/widgets/level/screen_wrapper.dart';
 import 'package:dartmission/src/ui/widgets/level/space_item.dart';
@@ -211,51 +212,53 @@ class _LevelScreenState extends State<LevelScreen> {
                 fit: BoxFit.cover,
               ),
             ),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: isMobile ? 100 : 40,
-                ),
-                if (_gameInProgress)
-                  Text(
-                    parseTimeLeft(
-                      _difficultyTracker.getLevelTimeLimit() - _timer.tick,
-                    ),
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6!
-                        .apply(color: Colors.white),
+            child: BackgroundScene(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: isMobile ? 100 : 40,
                   ),
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: isMobile ? 0 : screenHeight * 0.01,
-                  ),
-                  child: SizedBox(
-                    width: isMobile
-                        ? screenWidth * 0.9
-                        : isTablet
-                            ? screenWidth * 0.6
-                            : screenWidth * 0.25,
-                    child: GridView.builder(
-                      shrinkWrap: true,
-                      itemCount: columns * rows,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: columns,
-                        crossAxisSpacing: 4,
-                        mainAxisSpacing: 4,
+                  if (_gameInProgress)
+                    Text(
+                      parseTimeLeft(
+                        _difficultyTracker.getLevelTimeLimit() - _timer.tick,
                       ),
-                      itemBuilder: (BuildContext context, int index) {
-                        final x = index % columns;
-                        final y = index ~/ columns;
-                        return SpaceItem(
-                          onTilePressed: _onTileTapped,
-                          tile: _tiles[x][y],
-                        );
-                      },
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6!
+                          .apply(color: Colors.white),
+                    ),
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: isMobile ? 0 : screenHeight * 0.01,
+                    ),
+                    child: SizedBox(
+                      width: isMobile
+                          ? screenWidth * 0.9
+                          : isTablet
+                              ? screenWidth * 0.6
+                              : screenWidth * 0.25,
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        itemCount: columns * rows,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columns,
+                          crossAxisSpacing: 4,
+                          mainAxisSpacing: 4,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          final x = index % columns;
+                          final y = index ~/ columns;
+                          return SpaceItem(
+                            onTilePressed: _onTileTapped,
+                            tile: _tiles[x][y],
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
