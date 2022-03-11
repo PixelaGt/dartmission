@@ -1,6 +1,7 @@
 import 'package:dartmission/gen/assets.gen.dart';
 import 'package:dartmission/src/ui/screens/level_screen.dart';
 import 'package:dartmission/src/ui/themes/color.dart';
+import 'package:dartmission/src/ui/utils/routes.dart';
 import 'package:dartmission/src/ui/widgets/common/space_button.dart';
 import 'package:dartmission/src/ui/widgets/common/spaceman.dart';
 import 'package:flutter/material.dart';
@@ -87,10 +88,8 @@ class InitialScreen extends StatelessWidget {
             child: SpaceButton(
               image: Assets.images.svg.startBtn,
               color: pink,
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (context) => const LevelScreen(),
-                ),
+              onPressed: () => Navigator.of(context).push<dynamic>(
+                customPageRoute(const LevelScreen()),
               ),
             ),
           ),
