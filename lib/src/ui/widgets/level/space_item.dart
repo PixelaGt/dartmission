@@ -30,10 +30,9 @@ class SpaceItem extends StatelessWidget {
           ),
           elevation: 3,
           child: Stack(
+            fit: StackFit.expand,
             children: [
-              Assets.images.png.inicial.image(
-                fit: BoxFit.fill,
-              ),
+              Assets.images.png.inicial.image(fit: BoxFit.fill),
               const Align(
                 child: Spaceman(
                   animation: 'iddle',
