@@ -14,10 +14,11 @@ class _DartmissionAppState extends State<DartmissionApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: dartMissionTheme,
-      //  debugShowCheckedModeBanner: false,
-      home: const Scaffold(
-        backgroundColor: Color(0xFF331076),
-        body: SafeArea(child: InitialScreenView()),
+      home: Scaffold(
+        backgroundColor: dartMissionTheme.colorScheme.primary,
+        body: const SafeArea(
+          child: InitialScreen(),
+        ),
       ),
     );
   }

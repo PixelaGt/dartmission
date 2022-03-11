@@ -1,34 +1,17 @@
 import 'package:dartmission/gen/assets.gen.dart';
 import 'package:dartmission/src/ui/screens/initial_screen.dart';
+import 'package:dartmission/src/ui/themes/color.dart';
+import 'package:dartmission/src/ui/widgets/common/space_button.dart';
+import 'package:dartmission/src/ui/widgets/common/spaceman.dart';
 import 'package:flutter/material.dart';
-import 'package:rive/rive.dart';
 
-class SuccessfullyDialog extends StatefulWidget {
+class SuccessfullyDialog extends StatelessWidget {
   const SuccessfullyDialog({
     Key? key,
     required this.onContinue,
   }) : super(key: key);
 
   final VoidCallback onContinue;
-
-  @override
-  State createState() => _SuccessfullyDialogState();
-}
-
-class _SuccessfullyDialogState extends State<SuccessfullyDialog> {
-  late RiveAnimationController _controller;
-
-  @override
-  void initState() {
-    _controller = SimpleAnimation('win');
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,33 +51,31 @@ class _SuccessfullyDialogState extends State<SuccessfullyDialog> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
+                SpaceButton(
+                  image: Assets.images.svg.exitBtn,
+                  height: isMobile ? 40 : 75,
+                  color: aqua,
+                  width: isMobile ? 24 : 75,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).push(
                       MaterialPageRoute<void>(
-                        builder: (context) => const InitialScreenView(),
+                        builder: (context) => const InitialScreen(),
                       ),
                     );
                   },
-                  child: Assets.images.svg.exitBtn.svg(
-                    height: isMobile ? 40 : 75,
-                    width: isMobile ? 24 : 75,
-                  ),
                 ),
                 SizedBox(
                   width: isMobile ? screenWidth / 30 : screenWidth / 30,
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    widget.onContinue.call();
+                SpaceButton(
+                  image: Assets.images.svg.newMissionBtn,
+                  height: isMobile ? 40 : 75,
+                  width: isMobile ? 24 : 75,
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    onContinue.call();
                   },
-                  child: Assets.images.svg.newMissionBtn.svg(
-                    height: isMobile ? 40 : 75,
-                    width: isMobile ? 24 : 75,
-                  ),
                 ),
               ],
             ),
@@ -103,16 +84,10 @@ class _SuccessfullyDialogState extends State<SuccessfullyDialog> {
                 Alignment.centerRight.x - 0.25,
                 Alignment.center.y,
               ),
-              child: SizedBox(
+              child: const Spaceman(
+                animation: 'win',
                 height: 150,
                 width: 150,
-                child: RiveAnimation.asset(
-                  Assets.rive.pixman.path,
-                  antialiasing: false,
-                  alignment: Alignment.center,
-                  animations: const ['win'],
-                  controllers: [_controller],
-                ),
               ),
             ),
           ],
