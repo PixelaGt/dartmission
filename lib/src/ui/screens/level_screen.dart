@@ -559,8 +559,8 @@ class _LevelScreenState extends State<LevelScreen> {
                   ),
                   child: Column(
                     children: [
-                      const SizedBox(
-                        height: 100,
+                      SizedBox(
+                        height: isMobile ? 100 : 40,
                       ),
                       if (_gameInProgress)
                         Text(
@@ -572,11 +572,7 @@ class _LevelScreenState extends State<LevelScreen> {
                         ),
                       Padding(
                         padding: EdgeInsets.only(
-                          top: isMobile
-                              ? 0
-                              : isTablet
-                                  ? screenHeight * 0.01
-                                  : screenHeight * 0.1,
+                          top: isMobile ? 0 : screenHeight * 0.01,
                         ),
                         child: SizedBox(
                           width: isMobile
